@@ -3,17 +3,21 @@ from time import time
 import numpy as np
 from matplotlib import pyplot as plt
 
-def save_checkpoint(model, optimizer, epoch, path="content/models/checkpoint.pth"):
-  os.makedirs(os.path.dirname(path), exist_ok=True)
-  torch.save({
+def save_checkpoint(model, optimizer, epoch, path):
+    import os
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    torch.save({
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
-  }, path)
+    }, path)
+
+    print(f"Saved checkpoint to: {path}")
 
 def train_model(model, lr=1e-4, min_delta=0.1, patience=2, epochs=5,
                     training_dl=train_loader, val_dl=val_loader,
-                    test_dl=test_loader, training=True):
+                    test_dl=test_loader, training=True, save_path):
   #Checking gpu access
   if torch.cuda.is_available():
     gpu = torch.device("cuda")
@@ -55,7 +59,8 @@ def train_model(model, lr=1e-4, min_delta=0.1, patience=2, epochs=5,
         #Gradient Step
         optimizer.step()
         optimizer.zero_grad()
-
+        
+      save_checkpoint(model, optimizer, epoch, save_path)
       loss_list.append(train_loss)
       #Validation
       with torch.no_grad():
