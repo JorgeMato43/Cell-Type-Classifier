@@ -9,3 +9,7 @@ import shutil
 import os
 import urllib.request
 import zipfile
+from torch.optim import SGD
+from time import time
+import numpy as np
+from matplotlib import pyplot as plt
