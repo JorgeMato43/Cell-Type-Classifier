@@ -1,5 +1,11 @@
 This document contains all the necessary modules and packages to run this program
 
+!git clone https://github.com/sartorius-research/LIVECell.git
+%cd LIVECell
+
+!pip install pycocotools
+!pip install torch torchvision pycocotools opencv-python tqdm
+
 import os
 import cv2
 import numpy as np
@@ -9,6 +15,12 @@ import random
 import shutil
 import urllib.request
 import zipfile
-from torch.optim import SGD
 from time import time
 from matplotlib import pyplot as plt
+import torch
+import torchvision.models as models
+import torch.nn as nn
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+from torch.utils.data import Subset
+from torch.optim import SGD
