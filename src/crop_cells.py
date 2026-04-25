@@ -55,7 +55,7 @@ def crop_cell(ann_file, img_dir, out_dir):
 
 
 def train_val_test_data_dir_split(data_dir, 
-                                  test_data_dir=None.val_dir,
+                                  test_data_dir=None,
                                   train_dir=None, 
                                   val_dir=None, 
                                   test_dir=None):
