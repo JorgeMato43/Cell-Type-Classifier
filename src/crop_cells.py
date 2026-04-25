@@ -8,10 +8,10 @@ import shutil
 
 
 def crop_cell(ann_file, img_dir, out_dir):
-'''
-Crops cells out of each image in the img_dir directory and places each individual 
-cropped cell in the out_dir directory using the corresponding ann_file
-'''
+  '''
+  Crops cells out of each image in the img_dir directory and places each individual 
+  cropped cell in the out_dir directory using the corresponding ann_file
+  '''
   os.makedirs(out_dir, exist_ok=True)
 
   coco = COCO(ann_file)
