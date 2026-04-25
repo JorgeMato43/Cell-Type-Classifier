@@ -1,1 +1,8 @@
-
+This document contains all the necessary modules and packages to run this program
+import os
+import cv2
+import numpy as np
+from pycocotools.coco import COCO
+from tqdm import tqdm
+import random
+import shutil
