@@ -15,8 +15,8 @@ def save_checkpoint(model, optimizer, epoch, path):
 
     print(f"Saved checkpoint to: {path}")
 
-def train_model(model, optimizer, lr=1e-4, start_epoch=0, min_delta=0.1, 
-                patience=2, epochs=5, training_dlr, val_dl,
+def train_model(model, optimizer, training_dl, val_dl lr=1e-4, start_epoch=0, min_delta=0.1, 
+                patience=2, epochs=5,
                 test_dl, training=True, loading=False, save_path=""):
 
   '''
