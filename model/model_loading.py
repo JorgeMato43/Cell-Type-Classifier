@@ -15,7 +15,7 @@ def get_resnet_model(num_classes, pretrained=True):
 
 
 def load_model_checkpoint(path, optimizer, num_classes):
-    '''
+  '''
   Load model weights and optimizer states from previous training
   '''
   model = get_resnet_model(num_classes)
