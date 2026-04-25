@@ -6,3 +6,6 @@ from pycocotools.coco import COCO
 from tqdm import tqdm
 import random
 import shutil
+import os
+import urllib.request
+import zipfile
