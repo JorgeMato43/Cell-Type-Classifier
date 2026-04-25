@@ -13,12 +13,16 @@ def get_resnet_model(num_classes, pretrained=True):
 
   return model
 
-def load_model_checkpoint(path, num_classes):
-  '''
+
+def load_model_checkpoint(path, optimizer, num_classes):
+    '''
   Load model weights and optimizer states from previous training
   '''
   model = get_resnet_model(num_classes)
   checkpoint = torch.load(path)
   model.load_state_dict(checkpoint['model_state_dict'])
+  optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+  start_epoch = checkpoint['epoch']
+  print(f"Loaded checkpoint from epoch {start_epoch}")
   model.eval()
-  return model
+  return model, optimizer, start_epoch
