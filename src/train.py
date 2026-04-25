@@ -16,8 +16,8 @@ def save_checkpoint(model, optimizer, epoch, path):
     print(f"Saved checkpoint to: {path}")
 
 def train_model(model, optimizer, lr=1e-4, start_epoch=0, min_delta=0.1, 
-                patience=2, epochs=5, training_dl=train_loader, val_dl=val_loader,
-                test_dl=test_loader, training=True, loading=False, save_path=""):
+                patience=2, epochs=5, training_dlr, val_dl,
+                test_dl, training=True, loading=False, save_path=""):
 
   '''
   Trains given model with previously declared optimizer, implementing early stopping with patience and a min_delta. 
