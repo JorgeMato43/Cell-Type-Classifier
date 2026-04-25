@@ -63,3 +63,39 @@ def unzip_images(ROOT, IMG_DIR):
       zf.extractall(IMG_DIR)
 
   print("Unzipped to:", IMG_DIR)
+
+
+def make_datasets(train_dir, val_dir, test_dir):
+  '''
+  Takes the training, validation, and testing data directories as inputs and returns the corresponding dataset and the number of different classes
+  '''
+  transform = transforms.Compose([
+      transforms.ToTensor(),
+      transforms.Normalize([0.5], [0.5])
+  ])
+
+  train_dataset = datasets.ImageFolder(train_dir, transform=transform)
+  val_dataset = datasets.ImageFolder(val_dir, transform=transform)
+  test_dataset = datasets.ImageFolder(test_out_dir, transform=transform)
+  num_classes = len(train_dataset.classes)
+
+  return train_dataset, val_dataset, test_dataset, num_classes
+
+# Selecting a smaller set to train:
+
+
+def adjust_dataset(train_dataset, val_dataset, test_dataset, 
+                   train_size, val_size, test_size):
+
+  '''
+  Takes the train, validation, and test datasets along with their desired size 
+  and returns datasets of those sizes with elements randomly selected from the input datasets.
+  '''
+  indices = random.sample(range(len(train_dataset)), train_size)
+  train_dataset = Subset(train_dataset, indices)
+  val_indices = random.sample(range(len(val_dataset)), val_size)
+  val_dataset = Subset(val_dataset, val_indices)
+  test_indices = random.sample(range(len(test_dataset)), test_size)
+  test_dataset = Subset(test_dataset, test_indices)
+
+  return train_dataset, val_dataset, test_dataset
