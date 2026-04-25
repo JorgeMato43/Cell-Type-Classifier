@@ -15,9 +15,22 @@ def save_checkpoint(model, optimizer, epoch, path):
 
     print(f"Saved checkpoint to: {path}")
 
-def train_model(model, lr=1e-4, min_delta=0.1, patience=2, epochs=5,
-                    training_dl=train_loader, val_dl=val_loader,
-                    test_dl=test_loader, training=True, save_path):
+def train_model(model, optimizer, lr=1e-4, start_epoch=0, min_delta=0.1, 
+                patience=2, epochs=5, training_dl=train_loader, val_dl=val_loader,
+                test_dl=test_loader, training=True, loading=False, save_path=""):
+
+  '''
+  Trains given model with previously declared optimizer, implementing early stopping with patience and a min_delta. 
+  Training modes:
+  training = True (default) ==> model proceeds to undergo training, saving model parameters, current epoch, and optimizer state after each epoch.
+  training = False ==> model will proceed in testing mode, freezing gradients and outputting testing accuracy
+
+  loading modes:
+  If loading = False (default) ==> the function will generate a new optimizer and start epochs from 0
+  If loading = True ==> the function will use the provided optimizer, which should have been loaded with a previously saved state, 
+                        and the provided start_epoch to continue training
+ 
+  '''
   #Checking gpu access
   if torch.cuda.is_available():
     gpu = torch.device("cuda")
@@ -28,7 +41,6 @@ def train_model(model, lr=1e-4, min_delta=0.1, patience=2, epochs=5,
 
   model = model.to(gpu)
   loss = nn.CrossEntropyLoss()
-  optimizer = SGD(model.parameters(), lr=lr)
   epochs = epochs
   loss_list = []
   accuracy_list = []
@@ -39,8 +51,14 @@ def train_model(model, lr=1e-4, min_delta=0.1, patience=2, epochs=5,
   patience = patience
   best_accuracy = 0
 
+  if not loading:
+    start_epoch = 0
+    optimizer = SGD(model.parameters(), lr=lr)
+  else: 
+    start_epoch = start_epoch
+
   if training:
-    for epoch in range(epochs):
+    for epoch in range(start_epoch, epochs):
       train_loss = 0
       correct_preds = 0
       epoch_start = time()
@@ -60,7 +78,7 @@ def train_model(model, lr=1e-4, min_delta=0.1, patience=2, epochs=5,
         optimizer.step()
         optimizer.zero_grad()
         
-      save_checkpoint(model, optimizer, epoch, save_path)
+      save_checkpoint(model, optimizer, epoch+1, path=save_path)
       loss_list.append(train_loss)
       #Validation
       with torch.no_grad():
@@ -92,6 +110,7 @@ def train_model(model, lr=1e-4, min_delta=0.1, patience=2, epochs=5,
     avg_time_epoch = np.mean(epoch_times)
     print(f'Total trianing time: {total_training_time}')
     print(f'Average time per epoch: {avg_time_epoch}')
+    
     return loss_list, accuracy_list, avg_time_epoch
   else:
     with torch.no_grad():
@@ -102,49 +121,5 @@ def train_model(model, lr=1e-4, min_delta=0.1, patience=2, epochs=5,
         outputs = model(inputs)
         correct_preds += (torch.argmax(outputs, dim=1) == label).sum().item()
 
-
-# Helper function to visualize performance during training
-def plot_training_curves(train_losses, val_accuracies):
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
-
-    ax1.plot(train_losses)
-    ax1.set_title('Training Loss')
-    ax1.set_xlabel('Epoch')
-    ax1.set_ylabel('Loss')
-    ax1.grid(True)
-
-    ax2.plot(val_accuracies)
-    ax2.set_title('Accuracy')
-    ax2.set_xlabel('Epoch')
-    ax2.set_ylabel('Accuracy')
-    ax2.grid(True)
-
-    plt.tight_layout()
-    plt.show()
-
     accuracy = correct_preds / len(test_dl.dataset)
     print(f'accuracy:{accuracy}')
-
-
-def plot_ablation_training_curves(train_losses, val_accuracies, 
-                                  learning_rates, avg_time_epoch):
-    for i in range(len(learning_rates)):
-
-      fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
-
-      ax1.plot(train_losses[i])
-      ax1.set_title(f'Training Loss, lr = {learning_rates[i]}')
-      ax1.set_xlabel('Epoch')
-      ax1.set_ylabel('Loss')
-      ax1.set_subtitle(f"Average time per epoch: {avg_time_epoch}")
-      ax1.grid(True)
-
-      ax2.plot(val_accuracies[i])
-      ax2.set_title(f'Accuracy, lf = {learning_rates[i]}')
-      ax2.set_xlabel('Epoch')
-      ax2.set_ylabel('Accuracy')
-      ax2.grid(True)
-
-      plt.tight_layout()
-      plt.show()
