@@ -64,6 +64,52 @@ def unzip_images(ROOT, IMG_DIR):
 
   print("Unzipped to:", IMG_DIR)
 
+def train_val_test_data_dir_split(data_dir,
+                                  test_data_dir=None,
+                                  val_dir=None,
+                                  train_dir=None,
+                                  test_dir=None):
+  '''
+  Takes the data directory and the desired test, train,
+  and validation data directories, and splits the data into said directories.
+  '''
+
+  os.makedirs(train_dir, exist_ok=True)
+  os.makedirs(val_dir, exist_ok=True)
+  os.makedirs(test_dir, exist_ok=True)
+
+  if train_dir is not None and val_dir is not None:
+
+    for cls in os.listdir(data_dir):
+        imgs = os.listdir(os.path.join(data_dir, cls))
+        random.shuffle(imgs)
+
+        split = int(0.8 * len(imgs))
+
+        for i, img in enumerate(imgs):
+            src = os.path.join(data_dir, cls, img)
+
+            if i < split:
+                dst = os.path.join(train_dir, cls)
+            else:
+                dst = os.path.join(val_dir, cls)
+
+            os.makedirs(dst, exist_ok=True)
+            shutil.copy(src, os.path.join(dst, img))
+
+  if test_dir is not None:
+    for cls in os.listdir(data_dir):
+      imgs = os.listdir(os.path.join(data_dir, cls))
+      random.shuffle(imgs)
+
+      for i, img in enumerate(imgs):
+          src = os.path.join(data_dir, cls, img)
+
+          dst = os.path.join(test_dir, cls)
+
+          os.makedirs(dst, exist_ok=True)
+          shutil.copy(src, os.path.join(dst, img))
+
 
 def make_datasets(train_dir, val_dir, test_dir):
   '''
