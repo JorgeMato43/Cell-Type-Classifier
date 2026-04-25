@@ -4,10 +4,10 @@ import urllib.request
 import zipfile
 
 def make_dir(base):
-'''
-Makes the necessary images and annotation folders at the base directory provided
-and returns their directory address
-'''
+  '''
+  Makes the necessary images and annotation folders at the base directory provided
+  and returns their directory address
+  '''
   ROOT = base
   IMG_DIR = os.path.join(ROOT, "images")
   ANN_DIR = os.path.join(ROOT, "annotations")
