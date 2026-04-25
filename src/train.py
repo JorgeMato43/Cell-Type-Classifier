@@ -1,0 +1,137 @@
+from torch.optim import SGD
+from time import time
+import numpy as np
+from matplotlib import pyplot as plt
+
+def train_model(model, lr=1e-4, min_delta=0.1, patience=2, epochs=5,
+                    training_dl=train_loader, val_dl=val_loader,
+                    test_dl=test_loader, training=True):
+  #Checking gpu access
+  if torch.cuda.is_available():
+    gpu = torch.device("cuda")
+  elif torch.backends.mps.is_available():
+    gpu = torch.device("mps")
+  else:
+    gpu = torch.device("cpu") # Fallback to CPU if no GPU available
+
+  model = model.to(gpu)
+  loss = nn.CrossEntropyLoss()
+  optimizer = SGD(model.parameters(), lr=lr)
+  epochs = epochs
+  loss_list = []
+  accuracy_list = []
+  start_time = time()
+  epoch_times = []
+  counter = 0
+  min_delta = min_delta
+  patience = patience
+  best_accuracy = 0
+
+  if training:
+    for epoch in range(epochs):
+      train_loss = 0
+      correct_preds = 0
+      epoch_start = time()
+      for (inputs, label) in training_dl:
+        #Transfer to gpu
+        inputs = inputs.to(gpu)
+        label = label.to(gpu)
+        #Forward Propagation
+        outputs = model(inputs)
+        epoch_loss = loss(outputs, label)
+        train_loss += epoch_loss.item()
+
+        #Backward propagation
+        epoch_loss.backward()
+
+        #Gradient Step
+        optimizer.step()
+        optimizer.zero_grad()
+
+      loss_list.append(train_loss)
+      #Validation
+      with torch.no_grad():
+        for (inputs, label) in val_dl:
+          inputs = inputs.to(gpu)
+          label = label.to(gpu)
+          outputs = model(inputs)
+          correct_preds += (torch.argmax(outputs, dim=1) == label).sum().item()
+
+      accuracy = correct_preds / len(val_loader.dataset)
+      accuracy_list.append(accuracy)
+      epoch_end = time()
+      epoch_times.append(epoch_end-epoch_start)
+      print(f'epoch: {epoch+1}, training loss: {train_loss}, accuracy:{accuracy}')
+
+      #Early stopping
+      if accuracy > best_accuracy:
+        best_accuracy = accuracy
+      if accuracy < best_accuracy - min_delta:
+        counter += 1
+        if counter >= patience:
+          print(f'Early stopping at epoch {epoch+1}')
+          break
+      else:
+        counter = 0
+
+    end_time = time()
+    total_training_time = end_time - start_time
+    avg_time_epoch = np.mean(epoch_times)
+    print(f'Total trianing time: {total_training_time}')
+    print(f'Average time per epoch: {avg_time_epoch}')
+    return loss_list, accuracy_list, avg_time_epoch
+  else:
+    with torch.no_grad():
+      correct_preds = 0
+      for (inputs, label) in test_dl:
+        inputs = inputs.to(gpu)
+        label = label.to(gpu)
+        outputs = model(inputs)
+        correct_preds += (torch.argmax(outputs, dim=1) == label).sum().item()
+
+
+# Helper function to visualize performance during training
+def plot_training_curves(train_losses, val_accuracies):
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+    ax1.plot(train_losses)
+    ax1.set_title('Training Loss')
+    ax1.set_xlabel('Epoch')
+    ax1.set_ylabel('Loss')
+    ax1.grid(True)
+
+    ax2.plot(val_accuracies)
+    ax2.set_title('Accuracy')
+    ax2.set_xlabel('Epoch')
+    ax2.set_ylabel('Accuracy')
+    ax2.grid(True)
+
+    plt.tight_layout()
+    plt.show()
+
+    accuracy = correct_preds / len(test_dl.dataset)
+    print(f'accuracy:{accuracy}')
+
+
+def plot_ablation_training_curves(train_losses, val_accuracies, 
+                                  learning_rates, avg_time_epoch):
+    for i in range(len(learning_rates)):
+
+      fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+      ax1.plot(train_losses[i])
+      ax1.set_title(f'Training Loss, lr = {learning_rates[i]}')
+      ax1.set_xlabel('Epoch')
+      ax1.set_ylabel('Loss')
+      ax1.set_subtitle(f"Average time per epoch: {avg_time_epoch}")
+      ax1.grid(True)
+
+      ax2.plot(val_accuracies[i])
+      ax2.set_title(f'Accuracy, lf = {learning_rates[i]}')
+      ax2.set_xlabel('Epoch')
+      ax2.set_ylabel('Accuracy')
+      ax2.grid(True)
+
+      plt.tight_layout()
+      plt.show()
