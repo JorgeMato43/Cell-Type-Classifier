@@ -170,3 +170,128 @@ def plot_ablation_training_curves(train_losses, val_accuracies,
 
       plt.tight_layout()
       plt.show()
+
+
+
+def embeddings_cashing(dir, train_ids):
+
+  embedding_cache = {}
+
+  i = 0
+  for img_id in train_ids:
+      img_info = coco.loadImgs(img_id)[0]
+      path = os.path.join("/content/livecell/images/images/livecell_train_val_images", img_info['file_name'])
+
+      image = cv2.imread(path)
+      image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+      input_image = transform.apply_image(image)
+      input_image = torch.as_tensor(input_image, device=device)
+      input_image = input_image.permute(2,0,1).unsqueeze(0)
+      input_image = sam.preprocess(input_image)
+
+      with torch.no_grad():
+          embedding = sam.image_encoder(input_image)
+
+      embedding_cache[img_id] = embedding.cpu()  # store on CPU
+      i += 1
+      if i % 100 == 0:
+          print(f"Image {i}/{len(train_ids)} stored")
+  return embedding_cache
+
+
+def train_one_epoch_sam(embedding_cache, train_loader):
+    sam.train()
+    total_loss = 0
+    i = 0
+
+    for images, masks, boxes in train_loader:
+
+        for image, gt_mask, box in zip(images, masks, boxes):
+
+            image_embedding = embedding_cache[img_id].to(device)
+
+            # --- box prompt ---
+            box_t = transform.apply_boxes(box[None, :], image.shape[:2])
+            box_t = torch.as_tensor(box_t, dtype=torch.float, device=device)
+
+            sparse_embeddings, dense_embeddings = sam.prompt_encoder(
+                points=None,
+                boxes=box_t,
+                masks=None,
+            )
+
+            low_res_masks, _ = sam.mask_decoder(
+                image_embeddings=image_embedding,
+                image_pe=sam.prompt_encoder.get_dense_pe(),
+                sparse_prompt_embeddings=sparse_embeddings,
+                dense_prompt_embeddings=dense_embeddings,
+                multimask_output=False,
+            )
+
+            # --- GT mask ---
+            gt_mask_torch = torch.tensor(gt_mask, device=device).float()
+            gt_mask_torch = gt_mask_torch.unsqueeze(0).unsqueeze(0)
+
+            gt_mask_torch = F.interpolate(
+                gt_mask_torch,
+                size=low_res_masks.shape[-2:],
+                mode="nearest"
+            )
+
+            # --- loss ---
+            loss = loss_fn(low_res_masks, gt_mask_torch)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+
+    return total_loss
+
+
+def validate_sam(embedding_cache, val_loader):
+    sam.eval()
+    total_loss = 0
+    i = 0
+
+    with torch.no_grad():
+        for images, masks, boxes in val_loader:
+
+            for image, gt_mask, box in zip(images, masks, boxes):
+
+                image_embedding = embedding_cache[img_id].to(device)
+
+                # --- box prompt ---
+
+                box_t = transform.apply_boxes(box[None, :], image.shape[:2])
+                box_t = torch.as_tensor(box_t, dtype=torch.float, device=device)
+
+                sparse_embeddings, dense_embeddings = sam.prompt_encoder(
+                    points=None,
+                    boxes=box_t,
+                    masks=None,
+                )
+
+                low_res_masks, _ = sam.mask_decoder(
+                    image_embeddings=image_embedding,
+                    image_pe=sam.prompt_encoder.get_dense_pe(),
+                    sparse_prompt_embeddings=sparse_embeddings,
+                    dense_prompt_embeddings=dense_embeddings,
+                    multimask_output=False,
+                )
+
+                gt_mask_torch = torch.tensor(gt_mask, device=device).float()
+                gt_mask_torch = gt_mask_torch.unsqueeze(0).unsqueeze(0)
+
+                gt_mask_torch = F.interpolate(
+                    gt_mask_torch,
+                    size=low_res_masks.shape[-2:],
+                    mode="nearest"
+                )
+
+                loss = loss_fn(low_res_masks, gt_mask_torch)
+                total_loss += loss.item()
+
+    return total_loss
