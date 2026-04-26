@@ -68,7 +68,8 @@ def train_val_test_data_dir_split(data_dir,
                                   test_data_dir=None,
                                   val_dir=None,
                                   train_dir=None,
-                                  test_dir=None):
+                                  test_dir=None,
+                                 split = 0.8):
   '''
   Takes the data directory and the desired test, train,
   and validation data directories, and splits the data into said directories.
@@ -84,7 +85,7 @@ def train_val_test_data_dir_split(data_dir,
         imgs = os.listdir(os.path.join(data_dir, cls))
         random.shuffle(imgs)
 
-        split = int(0.8 * len(imgs))
+        split = int(split * len(imgs))
 
         for i, img in enumerate(imgs):
             src = os.path.join(data_dir, cls, img)
