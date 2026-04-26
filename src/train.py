@@ -125,9 +125,9 @@ def train_model(model, optimizer, training_dl=None, val_dl=None, test_dl=None, l
 
 
 def plot_training_curves(train_losses, val_accuracies):
-  '''
-     Helper function to visualize performance during training
-  '''
+    '''
+    Helper function to visualize performance during training
+    '''
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
 
@@ -148,9 +148,9 @@ def plot_training_curves(train_losses, val_accuracies):
 
 def plot_ablation_training_curves(train_losses, val_accuracies,
                                   learning_rates, avg_time_epoch):
-  '''
-     Helper function to visualize performance during training
-  '''
+    '''
+    Helper function to visualize performance during training
+    '''
 
     for i in range(len(learning_rates)):
 
