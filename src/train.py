@@ -122,3 +122,51 @@ def train_model(model, optimizer, training_dl=None, val_dl=None, test_dl=None, l
 
     accuracy = correct_preds / len(test_dl.dataset)
     print(f'accuracy:{accuracy}')
+
+
+def plot_training_curves(train_losses, val_accuracies):
+  '''
+     Helper function to visualize performance during training
+  '''
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+    ax1.plot(train_losses)
+    ax1.set_title('Training Loss')
+    ax1.set_xlabel('Epoch')
+    ax1.set_ylabel('Loss')
+    ax1.grid(True)
+
+    ax2.plot(val_accuracies)
+    ax2.set_title('Accuracy')
+    ax2.set_xlabel('Epoch')
+    ax2.set_ylabel('Accuracy')
+    ax2.grid(True)
+
+    plt.tight_layout()
+    plt.show()
+
+def plot_ablation_training_curves(train_losses, val_accuracies,
+                                  learning_rates, avg_time_epoch):
+  '''
+     Helper function to visualize performance during training
+  '''
+
+    for i in range(len(learning_rates)):
+
+      fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+      ax1.plot(train_losses[i])
+      ax1.set_title(f'Training Loss, lr = {learning_rates[i]}')
+      ax1.set_xlabel('Epoch')
+      ax1.set_ylabel('Loss')
+      ax1.grid(True)
+
+      ax2.plot(val_accuracies[i])
+      ax2.set_title(f'Accuracy, lf = {learning_rates[i]}')
+      ax2.set_xlabel('Epoch')
+      ax2.set_ylabel('Accuracy')
+      ax2.grid(True)
+
+      plt.tight_layout()
+      plt.show()
