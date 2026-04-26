@@ -176,7 +176,7 @@ def plot_ablation_training_curves(train_losses, val_accuracies,
 
 
 
-def embeddings_cashing(dir, train_ids):
+def embeddings_cashing(coco, dir, train_ids):
 
   embedding_cache = {}
 
