@@ -5,6 +5,7 @@ from pycocotools.coco import COCO
 from tqdm import tqdm
 import random
 import shutil
+import matplotlib.pyplot as plt
 
 
 def crop_cell(ann_file, img_dir, out_dir):
