@@ -2,9 +2,7 @@ This project was created using the following resources:
 
 -Segment Anything Model (SAM) developed by Meta AI.
 Repository: https://github.com/facebookresearch/segment-anything
-Paper:
-Kirillov et al., "Segment Anything", 2023
-https://arxiv.org/abs/2304.02643
+Paper: Kirillov et al., "Segment Anything", 2023   https://arxiv.org/abs/2304.02643
 
 -LIVECell dataset for training and evaluation.
 Source: https://www.nature.com/articles/s41592-021-01249-6
