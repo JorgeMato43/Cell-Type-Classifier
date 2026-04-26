@@ -2,9 +2,11 @@ from torch.optim import SGD
 from time import time
 import numpy as np
 from matplotlib import pyplot as plt
+import torch
+import os
 
 def save_checkpoint(model, optimizer, epoch, path):
-    import os
+    
     os.makedirs(os.path.dirname(path), exist_ok=True)
 
     torch.save({
