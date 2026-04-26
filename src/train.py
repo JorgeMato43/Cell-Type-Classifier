@@ -4,6 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import torch
 import os
+from pycocotools.coco import COCO
 
 def save_checkpoint(model, optimizer, epoch, path):
     
