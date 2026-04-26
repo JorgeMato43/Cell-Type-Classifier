@@ -100,3 +100,29 @@ def train_val_test_data_dir_split(data_dir,
           os.makedirs(dst, exist_ok=True)
           shutil.copy(src, os.path.join(dst, img))
 
+
+
+def segment_image(mask_generator, image_path, file_name):
+  '''
+  Shows the provided image with an outline segmenting the detected objects 
+  '''
+  img_path = os.path.join(
+      image_path,
+      file_name
+  )
+
+  image = cv2.imread(img_path)
+
+  if image is None:
+      raise ValueError(f"Failed to load image at {img_path}")
+
+  image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+  masks = mask_generator.generate(image)
+
+  plt.imshow(image)
+  for m in masks:
+      plt.contour(m['segmentation'], colors='r', linewidths=0.5)
+  plt.axis('off')
+  plt.show()
+
