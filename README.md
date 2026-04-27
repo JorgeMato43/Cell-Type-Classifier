@@ -9,4 +9,4 @@ To run this project, clone this repository into your workspace, then download al
 
 ## Video Links
 Project Overview:
-Technical Walkthrough:
+Technical Walkthrough: Videos/Technical Walkthrough.mp4
