@@ -3,6 +3,7 @@ import os
 import urllib.request
 import zipfile
 import random
+import shutil
 
 def make_dir(base):
   '''
