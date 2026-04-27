@@ -8,5 +8,15 @@ This project builds a pipeline for cell segmentation and classification using th
 To run this project, clone this repository into your workspace, then download all the data with the code in the loading data notebook located in the notebooks folder. All Jupiter notebooks incorporate these steps so that you can conduct or verify their results individually. Notice: Fine-tuning ResNet18 on 100,000 and SAM on 10,000 samples may take some time.
 
 ## Video Links
-Project Overview:
-Technical Walkthrough: Videos/Technical Walkthrough.mp4
+Project Overview: https://github.com/JorgeMato43/Cell-Type-Classifier/blob/main/Videos/Project%20Demo.mp4
+Technical Walkthrough: https://github.com/JorgeMato43/Cell-Type-Classifier/blob/main/Videos/Technical%20Walkthrough.mp4
+
+## Evaluation
+### Ablation Study
+This project conducted an ablation study to determine the training modality that best fit this task and the best learning rate. The two modalities tested were feature extraction and fine-tuning. Here I show the best training curves, this is, with the best learning rates for each modalities. The accuracy curve is shown in the right as a measure of model performance. 
+
+Feature Extraction
+<img width="1725" height="565" alt="image" src="https://github.com/user-attachments/assets/290f8519-60d7-4f38-b5da-84a281138fa5" />
+Sample size: 5000  
+best accuracy: 0.57
+
