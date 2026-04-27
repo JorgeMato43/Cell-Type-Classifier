@@ -36,7 +36,7 @@ The model achieved an accuracy of 0.83 with 100,000 samples. It may seem that th
 Next, I fine-tuned SAM with the goal of having an image segmentation model that could create masks around cells before ResNet18 classifies them. 
 <img width="1725" height="566" alt="image" src="https://github.com/user-attachments/assets/14f5e59e-1ced-49bd-a0fd-ebb6708540db" />
 
-Although training was stable, SAM's performance hardly improved. Deep inspection of the data proved that images of cells with blurry borders or whose shape was not round were hard for SAM to segment (image on the right). 
+Although training was stable, SAM's performance hardly improved. Deep inspection of the data proved that images of cells with blurry borders or whose shape was not round were hard for SAM to segment correctly (image on the right). 
 <img width="1789" height="604" alt="image" src="https://github.com/user-attachments/assets/d2518e70-5b6e-4252-bbbf-83bf9a031288" />
 
 
