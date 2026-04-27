@@ -84,6 +84,8 @@ def train_val_test_data_dir_split(data_dir,
   os.makedirs(train_dir, exist_ok=True)
   os.makedirs(val_dir, exist_ok=True)
   os.makedirs(test_dir, exist_ok=True)
+  os.makedirs(test_data_dir, exist_ok=True)
+                                   
 
   if train_dir is not None and val_dir is not None:
 
