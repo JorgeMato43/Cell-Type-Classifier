@@ -4,6 +4,10 @@ import urllib.request
 import zipfile
 import random
 import shutil
+import torch
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+from torch.utils.data import Subset
 
 def make_dir(base):
   '''
