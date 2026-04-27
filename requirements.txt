@@ -24,3 +24,9 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from torch.utils.data import Subset
 from torch.optim import SGD
+from src.train import *
+from model.model_loading import *
+from src.crop_cells import *
+from src.data_loader import *
+importlib.reload(src.data_loader)
+
