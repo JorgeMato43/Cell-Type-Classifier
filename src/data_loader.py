@@ -129,7 +129,7 @@ def make_datasets(train_dir, val_dir, test_dir):
 
   train_dataset = datasets.ImageFolder(train_dir, transform=transform)
   val_dataset = datasets.ImageFolder(val_dir, transform=transform)
-  test_dataset = datasets.ImageFolder(test_out_dir, transform=transform)
+  test_dataset = datasets.ImageFolder(test_data_dir, transform=transform)
   num_classes = len(train_dataset.classes)
 
   return train_dataset, val_dataset, test_dataset, num_classes
